@@ -1,39 +1,28 @@
-import React, { useState, useEffect, useCallback, useRef } from "react";
+import React, { useState } from "react";
+
+import Grid from "./components/Grid";
 
 function App() {
-  const [generation, setGeneration] = useState(0);
-  const [isRunning, setIsRunning] = useState(false);
-  const [runSpeed, setRunSpeed] = useState(1);
+  const [rows, setRows] = useState(25);
+  const [cols, setCols] = useState(25);
+  const [grid, setGrid] = useState(createGrid(rows, cols));
 
-  const runningRef = useRef(isRunning);
-  runningRef.current = isRunning;
-
-  const start = useCallback(
-    (nextGeneration) => {
-      if (!runningRef.current) {
-        return;
+  function createGrid(rows, cols) {
+    const grid = [];
+    for (let i = 0; i < rows; i++) {
+      const row = [];
+      for (let j = 0; j < cols; j++) {
+        row[j] = 1;
       }
+      grid[i] = row;
+    }
 
-      setGeneration(nextGeneration);
-
-      setTimeout(() => {
-        start(nextGeneration + 1);
-      }, 1000 / runSpeed);
-    },
-    [runSpeed]
-  );
-
-  useEffect(() => {
-    start(generation);
-  }, [isRunning, generation, start]);
+    return grid;
+  }
 
   return (
     <>
-      <h1>Conway's Game of Life</h1>
-      <button onClick={() => setIsRunning(!isRunning)}>
-        {!isRunning ? "Play" : "Pause"}
-      </button>
-      <h2>Generation #{generation}</h2>
+      <Grid grid={grid} rows={rows} cols={cols} />
     </>
   );
 }
