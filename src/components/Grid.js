@@ -1,6 +1,6 @@
 import React from "react";
 
-function Grid({ grid, rows, cols }) {
+function Grid({ grid, rows, cols, updateCellState, isRunning }) {
   const alive = "#ffe4e1";
   const dead = "#222";
 
@@ -13,10 +13,11 @@ function Grid({ grid, rows, cols }) {
         gap: "1px",
       }}
     >
-      {grid.map((row) => {
-        return row.map((cell) => {
+      {grid.map((row, y) => {
+        return row.map((cell, x) => {
           return (
             <div
+              onClick={() => updateCellState(x, y)}
               style={{
                 backgroundColor: cell ? alive : dead,
               }}

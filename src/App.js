@@ -12,7 +12,7 @@ function App() {
     for (let i = 0; i < rows; i++) {
       const row = [];
       for (let j = 0; j < cols; j++) {
-        row[j] = 1;
+        row[j] = 0;
       }
       grid[i] = row;
     }
@@ -20,9 +20,22 @@ function App() {
     return grid;
   }
 
+  function updateCellState(x, y) {
+    const updatedGrid = [...grid];
+
+    updatedGrid[y][x] = updatedGrid[y][x] ? 0 : 1;
+
+    setGrid(updatedGrid);
+  }
+
   return (
     <>
-      <Grid grid={grid} rows={rows} cols={cols} />
+      <Grid
+        grid={grid}
+        rows={rows}
+        cols={cols}
+        updateCellState={updateCellState}
+      />
     </>
   );
 }
