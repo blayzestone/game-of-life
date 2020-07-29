@@ -23,7 +23,7 @@ function App() {
   function updateCellState(x, y) {
     const updatedGrid = [...grid];
 
-    updatedGrid[y][x] = updatedGrid[y][x] ? 0 : 1;
+    updatedGrid[x][y] = updatedGrid[x][y] ? 0 : 1;
 
     setGrid(updatedGrid);
   }
@@ -39,7 +39,7 @@ function App() {
       }
     };
 
-    return grid[wrapIndex(y)][wrapIndex(x)];
+    return grid[wrapIndex(x)][wrapIndex(y)];
   }
 
   return (

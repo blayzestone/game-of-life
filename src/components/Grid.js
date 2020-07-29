@@ -1,20 +1,26 @@
 import React from "react";
 
-function Grid({ grid, rows, cols, updateCellState, isRunning }) {
+function Grid(props) {
   const alive = "#ffe4e1";
   const dead = "#222";
+
+  function updateCellState(x, y) {
+    if (!props.isRunning) {
+      props.updateCellState(x, y);
+    }
+  }
 
   return (
     <div
       style={{
         width: "min-content",
         display: "grid",
-        gridTemplate: `repeat(${rows}, 20px) / repeat(${cols}, 20px)`,
+        gridTemplate: `repeat(${props.rows}, 20px) / repeat(${props.cols}, 20px)`,
         gap: "1px",
       }}
     >
-      {grid.map((row, y) => {
-        return row.map((cell, x) => {
+      {props.grid.map((row, x) => {
+        return row.map((cell, y) => {
           return (
             <div
               onClick={() => updateCellState(x, y)}
