@@ -28,6 +28,20 @@ function App() {
     setGrid(updatedGrid);
   }
 
+  function getCell(x, y) {
+    const wrapIndex = (i) => {
+      if (i < 0) {
+        return grid.length - 1;
+      } else if (i >= grid.length) {
+        return 0;
+      } else {
+        return i;
+      }
+    };
+
+    return grid[wrapIndex(y)][wrapIndex(x)];
+  }
+
   return (
     <>
       <Grid
