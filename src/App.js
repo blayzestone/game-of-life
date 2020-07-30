@@ -1,39 +1,114 @@
 import React, { useState, useEffect, useCallback, useRef } from "react";
 
+import Grid from "./components/Grid";
+
 function App() {
+  const [rows, setRows] = useState(25);
+  const [cols, setCols] = useState(25);
+  const [grid, setGrid] = useState(createGrid(rows, cols));
   const [generation, setGeneration] = useState(0);
   const [isRunning, setIsRunning] = useState(false);
-  const [runSpeed, setRunSpeed] = useState(1);
 
-  const runningRef = useRef(isRunning);
-  runningRef.current = isRunning;
-
-  const start = useCallback(
-    (nextGeneration) => {
-      if (!runningRef.current) {
-        return;
+  function createGrid(rows, cols) {
+    const grid = [];
+    for (let i = 0; i < rows; i++) {
+      const row = [];
+      for (let j = 0; j < cols; j++) {
+        row[j] = 0;
       }
+      grid[i] = row;
+    }
 
-      setGeneration(nextGeneration);
+    return grid;
+  }
 
-      setTimeout(() => {
-        start(nextGeneration + 1);
-      }, 1000 / runSpeed);
-    },
-    [runSpeed]
-  );
+  const simulate = useCallback((gen = 1) => {
+    if (!isRunning) {
+      return;
+    }
 
-  useEffect(() => {
-    start(generation);
-  }, [isRunning, generation, start]);
+    setGeneration((gen) => generation + 1);
+    setGrid(createNextGeneration([...grid]));
+
+    setTimeout(simulate, 1000);
+  });
+
+  function createNextGeneration(grid) {
+    for (let i = 0; i < rows; i++) {
+      for (let j = 0; j < cols; j++) {
+        const sum = getNeighborCount(i, j);
+
+        if (grid[i][j] && sum < 2) {
+          updateCellState(i, j);
+        }
+
+        if (!grid[i][j] && sum === 3) {
+          updateCellState(i, j);
+        }
+      }
+    }
+
+    return grid;
+  }
+
+  function updateCellState(x, y) {
+    const updatedGrid = [...grid];
+
+    updatedGrid[x][y] = updatedGrid[x][y] ? 0 : 1;
+
+    setGrid(updatedGrid);
+  }
+
+  function getNeighborCount(x, y) {
+    const relativeNeighborPositions = [
+      [x - 1, y],
+      [x - 1, y + 1],
+      [x, y + 1],
+      [x + 1, y + 1],
+      [x + 1, y],
+      [x + 1, y - 1],
+      [x, y - 1],
+      [x - 1, y - 1],
+    ];
+
+    return relativeNeighborPositions.reduce((acc, [x, y]) => {
+      const cell = getCell(x, y);
+      return (acc += cell);
+    }, 0);
+  }
+
+  function getCell(x, y) {
+    const wrapIndex = (i) => {
+      if (i < 0) {
+        return grid.length - 1;
+      } else if (i >= grid.length) {
+        return 0;
+      } else {
+        return i;
+      }
+    };
+
+    return grid[wrapIndex(x)][wrapIndex(y)];
+  }
 
   return (
     <>
-      <h1>Conway's Game of Life</h1>
-      <button onClick={() => setIsRunning(!isRunning)}>
-        {!isRunning ? "Play" : "Pause"}
-      </button>
       <h2>Generation #{generation}</h2>
+      <button
+        onClick={() => {
+          setIsRunning(!isRunning);
+          simulate();
+        }}
+      >
+        {isRunning ? "Pause" : "Play"}
+      </button>
+      <Grid
+        grid={grid}
+        rows={rows}
+        cols={cols}
+        updateCellState={updateCellState}
+        isRunning={isRunning}
+      />
     </>
   );
 }
