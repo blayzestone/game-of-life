@@ -13,10 +13,7 @@ function App() {
   const runningRef = useRef(isRunning);
   runningRef.current = isRunning;
 
-  const gridRef = useRef(grid);
-  gridRef.current = grid;
-
-  const simulate = useCallback(() => {
+  const runSimulation = useCallback(() => {
     if (!runningRef.current) {
       return;
     }
@@ -43,7 +40,7 @@ function App() {
       })
     );
 
-    setTimeout(simulate, 1000);
+    setTimeout(runSimulation, 1000);
   });
 
   function createGrid(rows, cols) {
@@ -59,6 +56,20 @@ function App() {
     return grid;
   }
 
+  function getCell(x, y, grid) {
+    const wrapIndex = (i) => {
+      if (i < 0) {
+        return grid.length - 1;
+      } else if (i >= grid.length) {
+        return 0;
+      } else {
+        return i;
+      }
+    };
+
+    return grid[wrapIndex(x)][wrapIndex(y)];
+  }
+
   function toggleCellState(x, y) {
     setGrid(
       produce(grid, (gridCopy) => {
@@ -67,7 +78,7 @@ function App() {
     );
   }
 
-  function getNeighborCount(x, y, gridCopy) {
+  function getNeighborCount(x, y, grid) {
     const relativeNeighborPositions = [
       [-1, 0],
       [-1, 1],
@@ -80,23 +91,9 @@ function App() {
     ];
 
     return relativeNeighborPositions.reduce((acc, [neighborX, neighborY]) => {
-      const cell = getCell(x + neighborX, y + neighborY, gridCopy);
+      const cell = getCell(x + neighborX, y + neighborY, grid);
       return (acc += cell);
     }, 0);
-  }
-
-  function getCell(x, y, gridCopy) {
-    const wrapIndex = (i) => {
-      if (i < 0) {
-        return gridCopy.length - 1;
-      } else if (i >= gridCopy.length) {
-        return 0;
-      } else {
-        return i;
-      }
-    };
-
-    return gridCopy[wrapIndex(x)][wrapIndex(y)];
   }
 
   return (
@@ -106,7 +103,7 @@ function App() {
         onClick={() => {
           setIsRunning(!isRunning);
           runningRef.current = !isRunning;
-          simulate();
+          runSimulation();
         }}
       >
         {isRunning ? "Pause" : "Play"}
