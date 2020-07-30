@@ -6,7 +6,7 @@ import Grid from "./components/Grid";
 function App() {
   const [rows, setRows] = useState(25);
   const [cols, setCols] = useState(25);
-  const [grid, setGrid] = useState(createGrid(rows, cols));
+  const [grid, setGrid] = useState(createGrid(rows, cols, 0));
   const [generation, setGeneration] = useState(0);
   const [isRunning, setIsRunning] = useState(false);
 
@@ -49,6 +49,20 @@ function App() {
       const row = [];
       for (let j = 0; j < cols; j++) {
         row[j] = 0;
+      }
+      grid[i] = row;
+    }
+
+    return grid;
+  }
+
+  function randomizeGrid() {
+    const grid = [];
+
+    for (let i = 0; i < rows; i++) {
+      const row = [];
+      for (let j = 0; j < cols; j++) {
+        row[j] = Math.floor(Math.random() * 2);
       }
       grid[i] = row;
     }
@@ -107,6 +121,24 @@ function App() {
         }}
       >
         {isRunning ? "Pause" : "Play"}
+      </button>
+      <button
+        onClick={() => {
+          if (!isRunning) {
+            setGrid(createGrid(rows, cols));
+          }
+        }}
+      >
+        Reset
+      </button>
+      <button
+        onClick={() => {
+          if (!isRunning) {
+            setGrid(randomizeGrid());
+          }
+        }}
+      >
+        Randomize
       </button>
       <Grid
         isRunning={isRunning}
