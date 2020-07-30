@@ -155,7 +155,6 @@ function App() {
           1x
         </option>
         <option value={0.5}>2x</option>
-        <option value={0.25}>4x</option>
       </select>
       <input
         onChange={(e) => {
