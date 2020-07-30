@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useRef } from "react";
+import React, { useState, useCallback, useRef } from "react";
 
 import Grid from "./components/Grid";
 
@@ -8,6 +8,20 @@ function App() {
   const [grid, setGrid] = useState(createGrid(rows, cols));
   const [generation, setGeneration] = useState(0);
   const [isRunning, setIsRunning] = useState(false);
+
+  const runningRef = useRef(isRunning);
+  runningRef.current = isRunning;
+
+  const simulate = useCallback(() => {
+    if (!runningRef.current) {
+      return;
+    }
+
+    setGeneration((generation) => generation + 1);
+    setGrid(createNextGeneration([...grid]));
+
+    setTimeout(simulate, 1000);
+  }, []);
 
   function createGrid(rows, cols) {
     const grid = [];
@@ -21,17 +35,6 @@ function App() {
 
     return grid;
   }
-
-  const simulate = useCallback((gen = 1) => {
-    if (!isRunning) {
-      return;
-    }
-
-    setGeneration((gen) => generation + 1);
-    setGrid(createNextGeneration([...grid]));
-
-    setTimeout(simulate, 1000);
-  });
 
   function createNextGeneration(grid) {
     for (let i = 0; i < rows; i++) {
@@ -97,6 +100,7 @@ function App() {
       <button
         onClick={() => {
           setIsRunning(!isRunning);
+          runningRef.current = !runningRef.current;
           simulate();
         }}
       >
