@@ -129,6 +129,7 @@ function App() {
       <button
         onClick={() => {
           if (!isRunning) {
+            setGeneration(0);
             setGrid(createGrid(rows, cols));
           }
         }}
