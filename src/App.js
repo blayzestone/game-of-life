@@ -143,7 +143,8 @@ function App() {
         Randomize
       </button>
       <select
-        onClick={(e) => {
+        onChange={(e) => {
+          console.log(e.target.value);
           setRunningSpeed(e.target.value);
         }}
       >
