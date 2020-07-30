@@ -157,6 +157,28 @@ function App() {
         <option value={0.5}>2x</option>
         <option value={0.25}>4x</option>
       </select>
+      <input
+        onChange={(e) => {
+          if (!isRunning) {
+            setCols(e.target.value || 2);
+          }
+        }}
+        type="number"
+        min="1"
+        max="100"
+        placeholder="width"
+      />
+      <input
+        onChange={(e) => {
+          if (!isRunning) {
+            setRows(e.target.value || 2);
+          }
+        }}
+        type="number"
+        min="1"
+        max="100"
+        placeholder="height"
+      />
       <Grid
         isRunning={isRunning}
         grid={grid}
