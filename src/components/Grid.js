@@ -19,7 +19,7 @@ function Grid(props) {
             <div
               onClick={() => {
                 if (!props.isRunning) {
-                  props.toggleCellState(props.grid, x, y);
+                  props.toggleCellState(x, y);
                 }
               }}
               style={{

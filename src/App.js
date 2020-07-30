@@ -59,11 +59,12 @@ function App() {
     return grid;
   }
 
-  function toggleCellState(gridCopy, x, y) {
-    const newGrid = [...gridCopy];
-    newGrid[x][y] = newGrid[x][y] ? 0 : 1;
-
-    setGrid(newGrid);
+  function toggleCellState(x, y) {
+    setGrid(
+      produce(grid, (gridCopy) => {
+        gridCopy[x][y] = gridCopy[x][y] ? 0 : 1;
+      })
+    );
   }
 
   function getNeighborCount(x, y, gridCopy) {
