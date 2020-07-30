@@ -112,6 +112,7 @@ function App() {
 
   return (
     <>
+      <h1>The Game of Life</h1>
       <h2>Generation #{generation}</h2>
       <button
         onClick={() => {
@@ -148,6 +149,14 @@ function App() {
         toggleCellState={toggleCellState}
         setGrid={setGrid}
       />
+      <ul>
+        <li>
+          Any live cell with two or three live neighbors survives into the next
+          generation.
+        </li>
+        <li>Any dead cell with three neighbors becomes a live cell.</li>
+        <li>All other cells die in the next generation.</li>
+      </ul>
     </>
   );
 }
