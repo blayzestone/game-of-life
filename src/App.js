@@ -72,17 +72,19 @@ function App() {
   }
 
   function getCell(x, y, grid) {
-    const wrapIndex = (i) => {
-      if (i < 0) {
-        return grid.length - 1;
-      } else if (i >= grid.length) {
-        return 0;
-      } else {
-        return i;
-      }
-    };
+    if (x < 0) {
+      x = rows - 1;
+    } else if (x >= rows) {
+      x = 0;
+    }
 
-    return grid[wrapIndex(x)][wrapIndex(y)];
+    if (y < 0) {
+      y = cols - 1;
+    } else if (x >= rows) {
+      y = 0;
+    }
+
+    return grid[x][y];
   }
 
   function toggleCellState(x, y) {
