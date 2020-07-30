@@ -23,7 +23,11 @@ function Grid(props) {
         return row.map((cell, y) => {
           return (
             <div
-              onClick={() => updateCellState(x, y)}
+              onClick={() => {
+                if (!props.isRunning) {
+                  updateCellState(x, y);
+                }
+              }}
               style={{
                 backgroundColor: cell ? alive : dead,
               }}
