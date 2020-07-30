@@ -4,12 +4,6 @@ function Grid(props) {
   const alive = "#ffe4e1";
   const dead = "#222";
 
-  function updateCellState(x, y) {
-    if (!props.isRunning) {
-      props.updateCellState(x, y);
-    }
-  }
-
   return (
     <div
       style={{
@@ -25,7 +19,7 @@ function Grid(props) {
             <div
               onClick={() => {
                 if (!props.isRunning) {
-                  updateCellState(x, y);
+                  props.toggleCellState(x, y);
                 }
               }}
               style={{
