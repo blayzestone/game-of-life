@@ -9,6 +9,7 @@ function App() {
   const [grid, setGrid] = useState(createGrid(rows, cols, 0));
   const [generation, setGeneration] = useState(0);
   const [isRunning, setIsRunning] = useState(false);
+  const [runningSpeed, setRunningSpeed] = useState(1);
 
   const runningRef = useRef(isRunning);
   runningRef.current = isRunning;
@@ -40,7 +41,7 @@ function App() {
       })
     );
 
-    setTimeout(runSimulation, 1000);
+    setTimeout(runSimulation, 200 * runningSpeed);
   });
 
   function createGrid(rows, cols) {
@@ -141,6 +142,18 @@ function App() {
       >
         Randomize
       </button>
+      <select
+        onClick={(e) => {
+          setRunningSpeed(e.target.value);
+        }}
+      >
+        <option value={2}>0.5x</option>
+        <option value={1} selected>
+          1x
+        </option>
+        <option value={0.5}>2x</option>
+        <option value={0.25}>4x</option>
+      </select>
       <Grid
         isRunning={isRunning}
         grid={grid}
