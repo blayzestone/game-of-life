@@ -1,10 +1,11 @@
-import React, { useState, useCallback, useRef } from "react";
+import React, { useState, useCallback, useRef, useEffect } from "react";
+import produce from "immer";
 
 import Grid from "./components/Grid";
 
 function App() {
-  const [rows, setRows] = useState(25);
-  const [cols, setCols] = useState(25);
+  const [rows, setRows] = useState(9);
+  const [cols, setCols] = useState(9);
   const [grid, setGrid] = useState(createGrid(rows, cols));
   const [generation, setGeneration] = useState(0);
   const [isRunning, setIsRunning] = useState(false);
@@ -12,16 +13,31 @@ function App() {
   const runningRef = useRef(isRunning);
   runningRef.current = isRunning;
 
+  const gridRef = useRef(grid);
+  gridRef.current = grid;
+
   const simulate = useCallback(() => {
     if (!runningRef.current) {
       return;
     }
 
     setGeneration((generation) => generation + 1);
-    setGrid(createNextGeneration([...grid]));
+
+    gridRef.current = grid;
+    const nextGrid = produce(gridRef.current, (g) => {
+      return g;
+    });
+
+    setGrid((grid) => {
+      return produce(grid, (gridCopy) => {
+        createNextGeneration(gridCopy);
+      });
+    });
+
+    console.log(grid);
 
     setTimeout(simulate, 1000);
-  }, []);
+  });
 
   function createGrid(rows, cols) {
     const grid = [];
@@ -42,11 +58,11 @@ function App() {
         const sum = getNeighborCount(i, j);
 
         if (grid[i][j] && sum < 2) {
-          updateCellState(i, j);
+          grid = toggleCellState(grid, i, j);
         }
 
         if (!grid[i][j] && sum === 3) {
-          updateCellState(i, j);
+          grid = toggleCellState(grid, i, j);
         }
       }
     }
@@ -54,12 +70,10 @@ function App() {
     return grid;
   }
 
-  function updateCellState(x, y) {
-    const updatedGrid = [...grid];
+  function toggleCellState(grid, x, y) {
+    grid[x][y] = grid[x][y] ? 0 : 1;
 
-    updatedGrid[x][y] = updatedGrid[x][y] ? 0 : 1;
-
-    setGrid(updatedGrid);
+    return grid;
   }
 
   function getNeighborCount(x, y) {
@@ -107,11 +121,12 @@ function App() {
         {isRunning ? "Pause" : "Play"}
       </button>
       <Grid
+        isRunning={isRunning}
         grid={grid}
         rows={rows}
         cols={cols}
-        updateCellState={updateCellState}
-        isRunning={isRunning}
+        toggleCellState={toggleCellState}
+        setGrid={setGrid}
       />
     </>
   );

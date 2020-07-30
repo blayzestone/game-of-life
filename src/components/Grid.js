@@ -5,8 +5,13 @@ function Grid(props) {
   const dead = "#222";
 
   function updateCellState(x, y) {
-    if (!props.isRunning) {
-      props.updateCellState(x, y);
+    const { isRunning, grid, setGrid, toggleCellState } = props;
+
+    if (!isRunning) {
+      const gridCopy = [...grid];
+      const updatedGrid = toggleCellState(gridCopy, x, y);
+
+      setGrid(updatedGrid);
     }
   }
 
