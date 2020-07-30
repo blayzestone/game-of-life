@@ -1,11 +1,11 @@
-import React, { useState, useCallback, useRef, useEffect } from "react";
+import React, { useState, useCallback, useRef } from "react";
 import produce from "immer";
 
 import Grid from "./components/Grid";
 
 function App() {
-  const [rows, setRows] = useState(9);
-  const [cols, setCols] = useState(9);
+  const [rows, setRows] = useState(25);
+  const [cols, setCols] = useState(25);
   const [grid, setGrid] = useState(createGrid(rows, cols));
   const [generation, setGeneration] = useState(0);
   const [isRunning, setIsRunning] = useState(false);
@@ -23,18 +23,25 @@ function App() {
 
     setGeneration((generation) => generation + 1);
 
-    gridRef.current = grid;
-    const nextGrid = produce(gridRef.current, (g) => {
-      return g;
-    });
+    setGrid((grid) =>
+      produce(grid, (gridCopy) => {
+        for (let i = 0; i < rows; i++) {
+          for (let j = 0; j < cols; j++) {
+            const sum = getNeighborCount(i, j, grid);
 
-    setGrid((grid) => {
-      return produce(grid, (gridCopy) => {
-        createNextGeneration(gridCopy);
-      });
-    });
+            if (gridCopy[i][j] && sum < 2) {
+              gridCopy[i][j] = 0;
+            } else if (gridCopy[i][j] && sum > 3) {
+              gridCopy[i][j] = 0;
+            }
 
-    console.log(grid);
+            if (!gridCopy[i][j] && sum === 3) {
+              gridCopy[i][j] = 1;
+            }
+          }
+        }
+      })
+    );
 
     setTimeout(simulate, 1000);
   });
@@ -52,60 +59,43 @@ function App() {
     return grid;
   }
 
-  function createNextGeneration(grid) {
-    for (let i = 0; i < rows; i++) {
-      for (let j = 0; j < cols; j++) {
-        const sum = getNeighborCount(i, j);
+  function toggleCellState(gridCopy, x, y) {
+    const newGrid = [...gridCopy];
+    newGrid[x][y] = newGrid[x][y] ? 0 : 1;
 
-        if (grid[i][j] && sum < 2) {
-          grid = toggleCellState(grid, i, j);
-        }
-
-        if (!grid[i][j] && sum === 3) {
-          grid = toggleCellState(grid, i, j);
-        }
-      }
-    }
-
-    return grid;
+    setGrid(newGrid);
   }
 
-  function toggleCellState(grid, x, y) {
-    grid[x][y] = grid[x][y] ? 0 : 1;
-
-    return grid;
-  }
-
-  function getNeighborCount(x, y) {
+  function getNeighborCount(x, y, gridCopy) {
     const relativeNeighborPositions = [
-      [x - 1, y],
-      [x - 1, y + 1],
-      [x, y + 1],
-      [x + 1, y + 1],
-      [x + 1, y],
-      [x + 1, y - 1],
-      [x, y - 1],
-      [x - 1, y - 1],
+      [-1, 0],
+      [-1, 1],
+      [0, 1],
+      [1, 1],
+      [1, 0],
+      [1, -1],
+      [0, -1],
+      [-1, -1],
     ];
 
-    return relativeNeighborPositions.reduce((acc, [x, y]) => {
-      const cell = getCell(x, y);
+    return relativeNeighborPositions.reduce((acc, [neighborX, neighborY]) => {
+      const cell = getCell(x + neighborX, y + neighborY, gridCopy);
       return (acc += cell);
     }, 0);
   }
 
-  function getCell(x, y) {
+  function getCell(x, y, gridCopy) {
     const wrapIndex = (i) => {
       if (i < 0) {
-        return grid.length - 1;
-      } else if (i >= grid.length) {
+        return gridCopy.length - 1;
+      } else if (i >= gridCopy.length) {
         return 0;
       } else {
         return i;
       }
     };
 
-    return grid[wrapIndex(x)][wrapIndex(y)];
+    return gridCopy[wrapIndex(x)][wrapIndex(y)];
   }
 
   return (
@@ -114,7 +104,7 @@ function App() {
       <button
         onClick={() => {
           setIsRunning(!isRunning);
-          runningRef.current = !runningRef.current;
+          runningRef.current = !isRunning;
           simulate();
         }}
       >
